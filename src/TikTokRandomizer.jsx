@@ -4,6 +4,7 @@ import styles from "./TikTokRandomizer.module.css";
 function TikTokRandomizer() {
   const [videoUrls, setVideoUrls] = useState([]);
   const [randomVideo, setRandomVideo] = useState("");
+  const [cursor, setCursor] = useState(0);
 
   const searchQuery = "uia cat";
 
@@ -12,10 +13,14 @@ function TikTokRandomizer() {
       const fetchVideos = async () => {
         try {
           const response = await fetch(
-            `https://www.tikwm.com/api/feed/search?keywords=${searchQuery}`
+            `https://www.tikwm.com/api/feed/search?keywords=${searchQuery}&cursor=${cursor}`
           );
           const data = await response.json();
-          console.log(data.data);
+          if (!data.data.hasMore) {
+            setCursor(0);
+          } else {
+            setCursor((c) => c + 10);
+          }
           if (data.data.videos) {
             setVideoUrls(data.data.videos.map((video) => video.play));
           }
@@ -26,7 +31,7 @@ function TikTokRandomizer() {
 
       fetchVideos();
     }
-  }, [videoUrls]);
+  }, [videoUrls, cursor]);
 
   const generateVideo = () => {
     if (videoUrls.length > 0) {
@@ -49,9 +54,12 @@ function TikTokRandomizer() {
             src={randomVideo}
             allow="autoplay"
             className={styles.video}
-          ></iframe>{" "}
+          ></iframe>
         </div>
       )}
+      <p>
+        <a href={randomVideo}>Link to video</a>
+      </p>
     </div>
   );
 }
