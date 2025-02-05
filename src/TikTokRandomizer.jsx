@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "./TikTokRandomizer.module.css";
 
 function TikTokRandomizer() {
   const [videoUrls, setVideoUrls] = useState([]);
   const [randomVideo, setRandomVideo] = useState("");
   const [cursor, setCursor] = useState(0);
+  const titleOn = useRef(true);
 
   const searchQuery = "uia cat";
 
@@ -42,10 +43,23 @@ function TikTokRandomizer() {
       );
     }
   };
+
+  const hideTitle = () => {
+    if (titleOn.current) {
+      titleOn.current = false;
+    }
+  };
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>UIA Cat Generator</h1>
-      <button onClick={generateVideo} className={styles.button}>
+      {titleOn.current && <h1 className={styles.title}>UIA Cat Generator</h1>}
+      <button
+        onClick={() => {
+          generateVideo();
+          hideTitle();
+        }}
+        className={styles.button}
+      >
         Generate Video
       </button>
       {randomVideo && (
